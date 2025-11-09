@@ -1,0 +1,35 @@
+# Vagrant - all subdirectories
+**/.vagrant/
+.vagrant/
+*.box
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+
+# Kubeconfig files (if copied locally)
+kubeconfig
+k3s.yaml
+
+
+
