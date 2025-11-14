@@ -1,11 +1,12 @@
 Vagrant.configure("2") do |config|
 
+  
   config.vm.box = "generic/alpine318"
   config.vm.synced_folder "./confs" , "/confs_data"
 
   config.vm.define "master" do |master|
     master.vm.network  "private_network", ip: "192.168.56.110"
-    master.vm.hostname = "Server"
+    master.vm.hostname = "master"
     master.vm.provider "virtualbox" do |vb|
       vb.memory = "2048"
       vb.cpus =  "1"

@@ -3,31 +3,25 @@
 IP_SRV="192.168.56.110"
 SECRET_TOKEN="MySecretToken"
 
-echo ">>> [SERVER] K3s Server kurulumu başlıyor..."
+echo ">>> [SERVER] Starting K3s Server installation..."
 
+mkdir -p /etc/rancher/k3s
+envsubst < /confs_data/config.yaml > /etc/rancher/k3s/config.yaml
+chown root:root /etc/rancher/k3s/config.yaml
+chmod 0644 /etc/rancher/k3s/config.yaml
 
-curl -sfL https://get.k3s.io | \
-    INSTALL_K3S_EXEC="server \
-        --token $SECRET_TOKEN \
-        --node-ip $IP_SRV \
-        --bind-address $IP_SRV \
-        --write-kubeconfig-mode=644" \
-    sh -s -
+curl -sfL https://get.k3s.io | sh -s -
 
 sleep 10
 
-echo ">>> [SERVER] K3s'in hazır olması bekleniyor..."
+echo ">>> [SERVER] Waiting for K3s to be ready..."
 until sudo k3s kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get nodes &> /dev/null; do
     echo "Waiting for K3s to be ready..."
     sleep 5
 done
 
-cat /etc/rancher/k3s/k3s.yaml > /confs_data/k3s.yaml
 
-
-
-#----MONITOR------
-echo ">>> [SERVER] Kurulum tamamlandı!"
+echo ">>> [SERVER] Installation completed!"
 echo "Server IP: $IP_SRV"
 echo "Token: $SECRET_TOKEN"
 echo "RAM: $(free -h | awk '/Mem/ {print $3"/"$2}')"
