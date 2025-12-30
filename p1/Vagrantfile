@@ -1,32 +1,32 @@
+# k3s cluster: 1 server, 1 worker
 Vagrant.configure("2") do |config|
 
-  
   config.vm.box = "generic/alpine318"
   config.vm.synced_folder "./confs" , "/confs_data"
 
-  config.vm.define "master" do |master|
-    master.vm.network  "private_network", ip: "192.168.56.110"
-    master.vm.hostname = "master"
-    master.vm.provider "virtualbox" do |vb|
+  config.vm.define "ccurS" do |ccurS|
+    ccurS.vm.network "private_network", ip: "192.168.56.110"
+    ccurS.vm.hostname = "ccurS"
+    ccurS.vm.provider "virtualbox" do |vb|
       vb.memory = "2048"
-      vb.cpus =  "1"
-      vb.name = "master-node"  
+      vb.cpus = 1
+      vb.name = "ccurS"
     end
 
-    master.vm.provision "shell", path: "./scripts/server_init.sh"
+    ccurS.vm.provision "shell", path: "./scripts/server_init.sh"
 
   end
 
-  config.vm.define "slave" do |slave|
-    slave.vm.network  "private_network", ip: "192.168.56.111"
-    slave.vm.hostname = "slave-node"
-    slave.vm.provider "virtualbox" do |vb|
+  config.vm.define "ccurSW" do |ccurSW|
+    ccurSW.vm.network  "private_network", ip: "192.168.56.111"
+    ccurSW.vm.hostname = "ccurSW"
+    ccurSW.vm.provider "virtualbox" do |vb|
       vb.memory = "1024"
       vb.cpus = 1
-      vb.name = "slave-node"
+      vb.name = "ccurSW"
     end
 
-    slave.vm.provision "shell", path: "./scripts/worker_init.sh"
+    ccurSW.vm.provision "shell", path: "./scripts/worker_init.sh"
 
   end
 

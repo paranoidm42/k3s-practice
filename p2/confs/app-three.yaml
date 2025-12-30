@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: three-application
+  labels:
+    app: three-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: three-app
+  template:
+    metadata:
+      labels:
+        app: three-app
+    spec:
+      containers:
+        - name: nginx
+          image: nginxdemos/hello:plain-text
+          ports:
+            - containerPort: 80
+    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: three-app-service
+spec:
+  selector:
+    app: three-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: three-ingress
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+    - host: app3.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: three-app-service
+                port: 
+                  number: 80

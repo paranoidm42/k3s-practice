@@ -1,5 +1,4 @@
-#disable:
-#  - traefik
+disable: []
 
 token: "$SECRET_TOKEN"
 node-ip: "$IP_SRV"
@@ -8,3 +7,4 @@ write-kubeconfig-mode: "0644"
 nodeLabel:
   - "environment=production"
   - "cluster-role=server"
+

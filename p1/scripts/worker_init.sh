@@ -3,8 +3,6 @@
 SERVER_URL="https://192.168.56.110:6443"
 IP_AGENT="192.168.56.111"
 SECRET_TOKEN="MySecretToken"
-#ROLE_LABEL="node-role.kubernetes.io/worker=true"
-
 
 echo ">>> [WORKER] K3s Worker kurulumu başlıyor..."
 
@@ -16,8 +14,8 @@ curl -sfL https://get.k3s.io | \
     sh -s -
 
 echo ">>> [WORKER] Agent servisi bekleniyor..."
-sleep 5
-#----MONITOR------
+sleep 10
+
 
 echo ">>> [WORKER] Kurulum tamamlandı!"
 echo "Worker IP: $IP_AGENT"
@@ -33,6 +31,5 @@ else
     echo "HATA: Worker server'a bağlanamadı"
 fi
 
+# Alpine için OpenRC servis kontrolü
 sudo rc-service k3s-agent status
-
-
