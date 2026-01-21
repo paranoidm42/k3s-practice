@@ -5,19 +5,19 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
   
   
-  config.vm.define "master" do |master|
-    master.vm.network "private_network", ip: "192.168.56.110"
-    master.vm.network "forwarded_port", guest: 80, host:9090
-    master.vm.hostname = "master"
-    master.vm.provider "virtualbox" do |vb|
+  config.vm.define "ccurS" do |ccurS|
+    ccurS.vm.network "private_network", ip: "192.168.56.110"
+    ccurS.vm.network "forwarded_port", guest: 80, host:9090
+    ccurS.vm.hostname = "ccurS"
+    ccurS.vm.provider "virtualbox" do |vb|
       vb.cpus = "1"
       vb.memory = "1024"
-      vb.name = "master-node"
+      vb.name = "ccurS-node"
       vb.gui = false
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
     end
 
-    master.vm.provision "shell", path: "./scripts/server_init.sh"
+    ccurS.vm.provision "shell", path: "./scripts/server_init.sh"
   end
 
 end

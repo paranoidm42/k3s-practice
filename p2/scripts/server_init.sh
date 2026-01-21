@@ -24,7 +24,6 @@ until sudo k3s kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get nodes &>/dev/n
   sleep 5
 done
 
-# Remove master node taint to allow pod scheduling
 sudo k3s kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule- 2>/dev/null || true
 sudo k3s kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule- 2>/dev/null || true
 
