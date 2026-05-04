@@ -1,69 +1,44 @@
 #!/bin/bash
+set -e
 
-IP_SRV="192.168.56.110"
-SECRET_TOKEN="MySecretToken"
+export IP_SRV="192.168.56.110"
+export SECRET_TOKEN="MySecretToken"
 
-echo ">>> [SERVER] Starting K3s Server installation..."
+echo ">>> [SERVER] Alpine bağımlılıkları ve cgroup ayarları yapılıyor..."
 
-sudo apk add envsubst
+apk add --no-cache gettext curl libc6-compat cni-plugins
 
-export IP_SRV
-export SECRET_TOKEN
+rc-update add cgroups default
+rc-service cgroups start || true
+
+if ! grep -q "cgroup_enable=memory" /etc/update-extlinux.conf; then
+    sed -i 's/default_kernel_opts="/default_kernel_opts="cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory /' /etc/update-extlinux.conf
+    update-extlinux
+    echo ">>> [WARNING] Kernel ayarları güncellendi. 'vagrant reload' yapmanız gerekebilir!"
+fi
+
+echo ">>> [SERVER] K3s yapılandırması hazırlanıyor..."
 mkdir -p /etc/rancher/k3s
-envsubst </confs_data/config.yaml >/etc/rancher/k3s/config.yaml
-chown root:root /etc/rancher/k3s/config.yaml
+envsubst < /confs_data/config.yaml > /etc/rancher/k3s/config.yaml
 chmod 0644 /etc/rancher/k3s/config.yaml
 
-curl -sfL https://get.k3s.io | sh -s -
+curl -sfL https://get.k3s.io | sh -
 
-sleep 10
+echo ">>> [SERVER] K3s'in ayağa kalkması bekleniyor..."
 
-echo ">>> [SERVER] Waiting for K3s to be ready..."
-until sudo k3s kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get nodes &>/dev/null; do
-  echo "Waiting for K3s to be ready..."
+
+retry=0
+while ! k3s kubectl get nodes >/dev/null 2>&1; do
+  retry=$((retry+1))
+  if [ $retry -gt 20 ]; then echo "Hata: K3s zaman aşımına uğradı"; exit 1; fi
   sleep 5
 done
 
-sudo k3s kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule- 2>/dev/null || true
-sudo k3s kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule- 2>/dev/null || true
-
-echo ">>> [SERVER] Installation completed!"
-echo "Server IP: $IP_SRV"
-echo "Token: $SECRET_TOKEN"
-echo "RAM: $(free -h | awk '/Mem/ {print $3"/"$2}')"
-
-if pgrep k3s >/dev/null; then
-  echo "K3s Status: running"
-else
-  echo "K3s Status: stopped"
-fi
-
-echo ""
-echo "Cluster Nodes:"
-sudo k3s kubectl get nodes -o wide
-
-echo ""
 echo ">>> [SERVER] Deploying applications..."
-sudo k3s kubectl apply -f /confs_data/app-one.yaml
-sudo k3s kubectl apply -f /confs_data/app-two.yaml
-sudo k3s kubectl apply -f /confs_data/app-three.yaml
 
-echo ""
-echo ">>> [SERVER] Waiting for deployments to be ready..."
-sleep 10
+k3s kubectl apply -f /confs_data/app-one.yaml
+k3s kubectl apply -f /confs_data/app-two.yaml
+k3s kubectl apply -f /confs_data/app-three.yaml
 
-echo ""
-echo "Deployments:"
-sudo k3s kubectl get deployments -A
-
-echo ""
-echo "Services:"
-sudo k3s kubectl get services -A
-
-echo ""
-echo "Ingress:"
-sudo k3s kubectl get ingress -A
-
-echo ""
-echo "Pods:"
-sudo k3s kubectl get pods -A -o wide
+echo ">>> [SERVER] Kurulum tamamlandı!"
+k3s kubectl get nodes
