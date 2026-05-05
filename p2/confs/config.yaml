@@ -1,10 +1,8 @@
 disable: []
-
 token: "$SECRET_TOKEN"
 node-ip: "$IP_SRV"
 bind-address: "$IP_SRV"
 write-kubeconfig-mode: "0644"
-nodeLabel:
+node-label:
   - "environment=production"
   - "cluster-role=server"
-

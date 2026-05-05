@@ -31,5 +31,4 @@ else
     echo "HATA: Worker server'a bağlanamadı"
 fi
 
-# Alpine için OpenRC servis kontrolü
 sudo rc-service k3s-agent status

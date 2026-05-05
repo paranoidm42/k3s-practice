@@ -3,14 +3,17 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "generic/alpine318"
   config.vm.synced_folder "./confs" , "/confs_data", create: true
+  config.ssh.insert_key = false
+  config.ssh.connect_timeout = 120
+  config.vm.boot_timeout = 600
 
   config.vm.define "ccurS" do |ccurS|
-    ccurS.vm.network "private_network", ip: "192.168.56.110"
     ccurS.vm.hostname = "ccurS"
-    ccurS.vm.provider "virtualbox" do |vb|
-      vb.memory = "2048"
-      vb.cpus = 1
-      vb.name = "ccurS"
+    ccurS.vm.network "private_network", ip: "192.168.56.110", libvirt__forward_mode: "nat"
+
+    ccurS.vm.provider "libvirt" do |lv, override|
+      lv.memory = 2048
+      lv.cpus = 1
     end
 
     ccurS.vm.provision "shell", path: "./scripts/server_init.sh"
@@ -18,12 +21,12 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "ccurSW" do |ccurSW|
-    ccurSW.vm.network  "private_network", ip: "192.168.56.111"
+    ccurSW.vm.network "private_network", ip: "192.168.56.111", libvirt__forward_mode: "nat"
     ccurSW.vm.hostname = "ccurSW"
-    ccurSW.vm.provider "virtualbox" do |vb|
-      vb.memory = "1024"
-      vb.cpus = 1
-      vb.name = "ccurSW"
+
+    ccurSW.vm.provider "libvirt" do |lv, override|
+      lv.memory = 1024
+      lv.cpus = 1
     end
 
     ccurSW.vm.provision "shell", path: "./scripts/worker_init.sh" 
