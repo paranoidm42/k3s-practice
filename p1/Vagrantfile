@@ -1,11 +1,11 @@
 # k3s cluster: 1 server, 1 worker
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "generic/alpine318"
-  config.vm.synced_folder "./confs" , "/confs_data", create: true
-  config.ssh.insert_key = false
-  config.ssh.connect_timeout = 120
-  config.vm.boot_timeout = 600
+  config.vm.box = "debian/bookworm64"
+  
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.synced_folder "./confs" , "/confs_data", type: "rsync", create: true
+
 
   config.vm.define "ccurS" do |ccurS|
     ccurS.vm.hostname = "ccurS"

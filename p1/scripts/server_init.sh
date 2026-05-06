@@ -1,11 +1,12 @@
 #!/bin/bash
 
-IP_SRV="192.168.56.110"
+IP_SRV=$(hostname -I | grep -o '192\.168\.56\.[0-9.]*' | head -n 1)
 SECRET_TOKEN="MySecretToken"
 
 echo ">>> [SERVER] K3s Server kurulumu başlıyor..."
 
-# sudo apk add --no-cache curl
+sudo apt-get update -y
+sudo apt-get install -y curl gettext-base
 
 curl -sfL https://get.k3s.io | \
     INSTALL_K3S_EXEC="server \
@@ -23,12 +24,7 @@ until sudo k3s kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get nodes &> /dev/
     sleep 5
 done
 
-sudo k3s kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule- 2>/dev/null || true
-sudo k3s kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule- 2>/dev/null || true
-
 cat /etc/rancher/k3s/k3s.yaml > /confs_data/k3s.yaml
-
-
 
 echo ">>> [SERVER] Kurulum tamamlandı!"
 echo "Server IP: $IP_SRV"

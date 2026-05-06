@@ -1,8 +1,13 @@
 #!/bin/bash
 
 SERVER_URL="https://192.168.56.110:6443"
-IP_AGENT="192.168.56.111"
+IP_AGENT=$(hostname -I | grep -o '192\.168\.56\.[0-9.]*' | head -n 1)
 SECRET_TOKEN="MySecretToken"
+
+
+
+sudo apt-get update -y
+sudo apt-get install -y curl gettext-base
 
 echo ">>> [WORKER] K3s Worker kurulumu başlıyor..."
 
@@ -31,4 +36,4 @@ else
     echo "HATA: Worker server'a bağlanamadı"
 fi
 
-sudo rc-service k3s-agent status
+sudo systemctl status  k3s-agent
