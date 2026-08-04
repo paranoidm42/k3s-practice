@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IP_SRV=$(hostname -I | grep -o '192\.168\.56\.[0-9.]*' | head -n 1)
+IP_SRV="192.168.56.110"
 SECRET_TOKEN="MySecretToken"
 
 echo ">>> [SERVER] K3s Server kurulumu başlıyor..."

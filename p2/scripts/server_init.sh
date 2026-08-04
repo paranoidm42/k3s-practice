@@ -35,6 +35,9 @@ if [ $ELAPSED -ge $TIMEOUT ]; then
   exit 1
 fi
 
+# Wait a few seconds for API server & controllers to settle
+sleep 5
+
 echo "[SERVER] Uygulamalar deploy ediliyor..."
 sudo k3s kubectl apply -f /confs_data/app-one.yaml
 sudo k3s kubectl apply -f /confs_data/app-two.yaml
